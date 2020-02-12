@@ -24,6 +24,35 @@ wget -O - https://raw.githubusercontent.com/sysvar/siem-in-a-box/master/install.
 # Usage
 ```
 /opt/siem-in-a-box# make
+
+  SIEM IN A BOX
+
+  [+] Commands:
+
+      Cluster Services
+      make start                                - ELK Start
+      make stop                                 - ELK Stop
+      make restart                              - ELK Restart (+ Rebuild)
+      make build                                - ELK Config Change (Rebuild Stack)
+
+      Cluster Status
+      make status                               - ELK and System Status
+      make health                               - Elastic Health
+      make indices-[container]                  - Elastic Indices (syslog/logstash/packet/metric/audit/file/heart)
+
+      Cluster Troubleshooting
+      make logs-[container]                     - Logs (elastic/logstash/kibana/packet/metric/audit/file/heart)
+      make shell-[container]                    - Shell (elastic/logstash/kibana/packet/metric/audit/file/heart)
+      make import-[container]                   - Import Default Dashboards (packet/metric/audit/file/heart)
+
+      Cluster Maintenance
+      make set-shards                           - Elastic set Number of Shards (Globally)
+      make set-replias                          - Elastic set Number of Replicas (Globally)
+      make delete                               - Elastic Delete Indices (Dangerous!)
+
+      OS
+      make decrypt                              - Decrypt Elastic Datastore (Custom)
+      
 ```
 
 # Notes
