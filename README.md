@@ -1,5 +1,5 @@
 # SIEM IN A BOX
-Early POC
+This is a bare bones SIEM built on Elastic ELK using a Docker deployment. Made for a simple one command deployment. Your welcome.
 
 # Features
  - Run on Docker
@@ -15,7 +15,7 @@ wget -O - https://raw.githubusercontent.com/sysvar/siem-in-a-box/master/install.
 ```
 
 # Logins
- - URL: http://<LOCAL IP>:5601
+ - URL: http://LOCAL-IP:5601
  - User: elastic
  - Pass: changeme
 
