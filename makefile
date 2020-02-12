@@ -85,7 +85,7 @@ start:
 	@echo
 	@docker-compose up -d 2>/dev/null
 	@sleep 2
-	@docker-compose ps
+	@make status
 	@echo
 	@echo "      IP Address: ${ips}"
 	@echo
