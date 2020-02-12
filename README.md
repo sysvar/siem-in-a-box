@@ -1,10 +1,12 @@
 # SIEM IN A BOX
 This is a bare bones SIEM built on Elastic ELK using a Docker deployment. Made for a simple one command deployment. Your welcome.
 
+Note the script does an 'apt upgrade'.
+
 # Features
  - Run on Docker
- - Basic ELK
- - All Beats
+ - Basic Elastic ELK
+ - All Elastic Beats
  - Sample Beats Dashboards
 
 # Pre-Requirements
