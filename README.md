@@ -7,6 +7,12 @@ This is a bare bones SIEM built on Elastic ELK using a Docker deployment. Made f
  - All Beats
  - Sample Beats Dashboards
 
+# Pre-Requirements
+ - None
+
+# Testing
+ - Only tested on Debian 10
+
 # Installation
 ```
 su -l
