@@ -9,7 +9,7 @@ echo "     SIEM IN A BOX Install Script"
 echo
 echo " [+] Installing Updates"
 apt update -qq 2>/dev/null
-apt install sudo curl -yqq 2>/dev/null
+apt install sudo curl net-tools -yqq 2>/dev/null
 apt upgrade -yqq 2>/dev/null
 echo
 echo
