@@ -3,7 +3,7 @@ This is a bare bones SIEM built on Elastic ELK using a Docker deployment. Made f
 
 # Features
  - Run on Docker
- - Basic Elastic ELK
+ - Basic Elastic ELK 7.5.1
  - All Elastic Beats
  - Sample Beats Dashboards
 
@@ -52,7 +52,7 @@ wget -O - https://raw.githubusercontent.com/sysvar/siem-in-a-box/master/install.
 
       OS
       make decrypt                              - Decrypt Elastic Datastore (Custom)
-      
+
 ```
 
 # Notes
