@@ -1,8 +1,6 @@
 # SIEM IN A BOX
 This is a bare bones SIEM built on Elastic ELK using a Docker deployment. Made for a simple one command deployment. Your welcome.
 
-Note the script does an 'apt upgrade'.
-
 # Features
  - Run on Docker
  - Basic Elastic ELK
@@ -21,6 +19,10 @@ su -l
 
 wget -O - https://raw.githubusercontent.com/sysvar/siem-in-a-box/master/install.sh | bash
 ```
+
+# Notes
+ - The script does an 'apt upgrade'.
+ - Files at: /opt/siem-in-a-box
 
 # Logins
  - URL: http://LOCAL-IP:5601
