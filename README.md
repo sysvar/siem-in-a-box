@@ -9,5 +9,5 @@ Early POC
 
 # Installation
 ```
-wget https://github.com/sysvar/siem-in-a-box/blob/master/install.sh | bash
+ wget -O - https://raw.githubusercontent.com/sysvar/siem-in-a-box/master/install.sh | bash
 ```
