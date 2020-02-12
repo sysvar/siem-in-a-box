@@ -8,4 +8,6 @@ Early POC
  - Sample Beats Dashboards
 
 # Installation
-		wget https://github.com/sysvar/siem-in-a-box/blob/master/install.sh | bash
+```
+wget https://github.com/sysvar/siem-in-a-box/blob/master/install.sh | bash
+```
