@@ -8,7 +8,8 @@ This is a bare bones SIEM built on Elastic ELK using a Docker deployment. Made f
  - Sample Beats Dashboards
 
 # Pre-Requirements
- - None
+ - No package pre-requirements
+ - For system: 4GB RAM, 6 CPU Treads, 5 GB Disk 
 
 # Testing
  - Only tested on Debian 10
@@ -18,6 +19,11 @@ This is a bare bones SIEM built on Elastic ELK using a Docker deployment. Made f
 su -l
 
 wget -O - https://raw.githubusercontent.com/sysvar/siem-in-a-box/master/install.sh | bash
+```
+
+# Usage
+```
+/opt/siem-in-a-box# make
 ```
 
 # Notes
