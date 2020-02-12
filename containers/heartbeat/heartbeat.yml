@@ -1,0 +1,112 @@
+############################# Heartbeat ######################################
+
+heartbeat.config.monitors:
+  path: ${path.config}/monitors.d/*.yml
+  reload.enabled: false
+  reload.period: 5s
+
+heartbeat.monitors:
+- type: icmp
+  name: siem-icmp
+  enabled: true
+  schedule: '*/5 * * * * * *'
+  hosts: ["filebeat","metricbeat","packetbeat","elasticsearch","auditbeat","logstash","kibana","apache2","nginx","mysql"]
+  ipv4: true
+  ipv6: false
+  timeout: 5s
+  wait: 1s
+
+- type: icmp
+  name: network
+  enabled: true
+  schedule: '*/45 * * * * * *'
+  hosts: ["192.168.1.1","192.168.1.2","192.168.1.3","192.168.1.4","192.168.1.5","192.168.1.6","192.168.1.7","192.168.1.8"]
+  ipv4: true
+  ipv6: false
+  timeout: 7s
+  wait: 1s
+
+- type: tcp
+  name: siem-services
+  enabled: true
+  schedule: '@every 20s'
+  hosts: ["${ELASTIC_HOST}"]
+  ipv4: true
+  ipv6: false
+  ports: [5601, 9200, 5044]
+  timeout: 5s
+  #check:
+    #send: ''
+    #receive: ''
+  #ssl:
+    #certificate_authorities: ['']
+    #supported_protocols: ["TLSv1.0", "TLSv1.1", "TLSv1.2"]
+
+- type: http
+  name: elasticsearch
+  enabled: true
+  schedule: '@every 40s'
+  urls: ["${ELASTIC_URL}"]
+  ipv4: true
+  ipv6: false
+  timeout: 10s
+  username: '${ELASTIC_USER}'
+  password: '${ELASTIC_PASS}'
+  #ssl:
+    #certificate_authorities: ['']
+    #supported_protocols: ["TLSv1.0", "TLSv1.1", "TLSv1.2"]
+  #check.request:
+    #method: "GET"
+    #headers:
+    #body:
+  #check.response:
+    #status: 0
+    #headers:
+    #body:
+
+heartbeat.scheduler:
+  limit: 0
+  #location: ''
+
+#================================ General =====================================
+
+name: siem
+tags: ["heartbeat"]
+
+#==================== Elasticsearch template setting ==========================
+
+setup.index_pattern.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+  index.codec: best_compression
+
+setup.template.name: "heartbeat"
+setup.template.pattern: "heartbeat-*"
+setup.template.overwrite: false
+setup.template.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+
+#================================ Outputs =====================================
+
+output.elasticsearch:
+  hosts: ["${ELASTIC_HOST}"]
+  protocol: "${ELASTIC_PROTO}"
+  username: "${ELASTIC_USER}"
+  password: "${ELASTIC_PASS}"
+
+#output.logstash:
+  #hosts: ["logstash:5044"]
+  #ssl.certificate_authorities: ["/usr/share/heartbeat/ssl/ca.crt"]
+  #ssl.certificate: "/usr/share/heartbeat/ssl/self-client.crt"
+  #ssl.key: "/usr/share/heartbeat/ssl/self-client.key"
+
+#================================ Processors =====================================
+
+processors:
+  - add_observer_metadata:
+
+#================================ Logging =====================================
+
+#logging.level: debug
+#logging.selectors: ["*"]

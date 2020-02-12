@@ -1,0 +1,93 @@
+#============================== Network device ================================
+
+packetbeat.interfaces.device: any
+
+#================================== Flows =====================================
+
+packetbeat.flows:
+  timeout: 30s
+  period: 10s
+
+#========================== Transaction protocols =============================
+
+packetbeat.protocols:
+- type: icmp
+  enabled: true
+
+- type: amqp
+  ports: [5672]
+
+- type: cassandra
+  ports: [9042]
+
+- type: dns
+  ports: [53]
+  include_authorities: true
+  include_additionals: true
+
+- type: http
+  ports: [80, 8080, 8000, 5000, 8002]
+
+- type: memcache
+  ports: [11211]
+
+- type: mysql
+  ports: [3306]
+
+- type: pgsql
+  ports: [5432]
+
+- type: redis
+  ports: [6379]
+
+- type: thrift
+  ports: [9090]
+
+- type: mongodb
+  ports: [27017]
+
+- type: nfs
+  ports: [2049]
+
+- type: tls
+  ports: [443]
+
+#==================== Elasticsearch template setting ==========================
+
+setup.index_patterns.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+  index.codec: best_compression
+
+setup.template.name: "packetbeat"
+setup.template.pattern: "packetbeat-*"
+setup.template.overwrite: false
+setup.template.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+
+#================================ General =====================================
+
+name: siem
+tags: ["packetbeat"]
+
+#================================ Outputs =====================================
+
+output.elasticsearch:
+  hosts: ["${ELASTIC_HOST}"]
+  protocol: "${ELASTIC_PROTO}"
+  username: "${ELASTIC_USER}"
+  password: "${ELASTIC_PASS}"
+
+#output.logstash:
+  # The Logstash hosts
+  #hosts: ["logstash:5044"]
+  #ssl.certificate_authorities: ["/usr/share/packetbeat/ssl/ca.crt"]
+  #ssl.certificate: "/usr/share/packetbeat/ssl/self-client.crt"
+  #ssl.key: "/usr/share/packetbeat/ssl/self-client.key"
+
+#================================ Logging =====================================
+
+# logging.level: debug
+# logging.selectors: ["*"]
+

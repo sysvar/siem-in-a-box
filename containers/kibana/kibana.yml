@@ -1,0 +1,13 @@
+---
+## Default Kibana configuration from Kibana base image.
+## https://github.com/elastic/kibana/blob/master/src/dev/build/tasks/os_packages/docker_generator/templates/kibana_yml.template.js
+#
+server.name: siem
+server.host: "0"
+elasticsearch.hosts: [ "${ELASTIC_URL}" ]
+xpack.monitoring.ui.container.elasticsearch.enabled: true
+
+## X-Pack security credentials
+#
+elasticsearch.username: ${ELASTIC_USER}
+elasticsearch.password: ${ELASTIC_PASS}

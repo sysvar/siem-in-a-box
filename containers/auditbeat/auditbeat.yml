@@ -1,0 +1,60 @@
+#==========================  Modules configuration =============================
+
+auditbeat.modules:
+  - module: auditd
+    audit_rules: |
+      -a always,exit -F arch=b32 -S all -F key=32bit-abi
+      -a always,exit -F arch=b64 -S execve,execveat -k exec
+      -a always,exit -F arch=b64 -S accept,bind,connect,recvfrom -F key=external-access
+      -w /etc/group -p wa -k identity
+      -w /etc/passwd -p wa -k identity
+      -w /etc/gshadow -p wa -k identity
+      -a always,exit -F arch=b64 -S open,creat,truncate,ftruncate,openat,open_by_handle_at -F exit=-EACCES -k access
+      -a always,exit -F arch=b64 -S open,creat,truncate,ftruncate,openat,open_by_handle_at -F exit=-EPERM -k access
+  - module: file_integrity
+    paths:
+    - /bin
+    - /usr/bin
+    - /sbin
+    - /usr/sbin
+    - /etc
+    - /opt
+
+#==================== Elasticsearch template setting ==========================
+
+setup.index_patterns.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+  index.codec: best_compression
+
+setup.template.name: "auditbeat"
+setup.template.pattern: "auditbeat-*"
+setup.template.overwrite: false
+setup.template.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+
+#================================ General =====================================
+
+name: siem
+tags: ["auditbeat"]
+
+#================================ Outputs =====================================
+
+output.elasticsearch:
+  hosts: ["${ELASTIC_HOST}"]
+  protocol: "${ELASTIC_PROTO}"
+  username: "${ELASTIC_USER}"
+  password: "${ELASTIC_PASS}"
+
+#output.logstash:
+  #hosts: ["logstash:5044"]
+  #ssl.enabled: true
+  #ssl.certificate_authorities: ["/usr/share/auditbeat/ssl/ca.crt"]
+  #ssl.certificate: "/usr/share/auditbeat/ssl/self-client.crt"
+  #ssl.key: "/usr/share/auditbeat/ssl/self-client.key"
+
+#================================ Logging =====================================
+
+#logging.level: debug
+#logging.selectors: ["*"]

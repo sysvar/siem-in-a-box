@@ -1,0 +1,246 @@
+version: '3.2'
+
+services:
+  elasticsearch:
+    build:
+      context: containers/elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: elasticsearch
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./containers/elasticsearch/elasticsearch.yml
+        target: /usr/share/elasticsearch/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data/
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      #ELASTIC_PASSWORD: changeme
+      ELASTIC_CLUSTER_NAME: $ELASTIC_CLUSTER_NAME
+      discovery.type: single-node
+    networks:
+      - elk
+
+  logstash:
+    build:
+      context: containers/logstash/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: logstash
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./containers/logstash/logstash.yml
+        target: /usr/share/logstash/logstash.yml
+        read_only: true
+      - type: bind
+        source: ./containers/logstash/pipeline/
+        target: /usr/share/logstash/pipeline/
+        read_only: true
+    ports:
+      - "1514:1514/udp"
+      - "5000:5000"
+      - "5044:5044"
+      - "5045:5045"
+      - "9600:9600"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_HOST: $ELASTIC_HOST
+      ELASTIC_PROTO: $ELASTIC_PROTO
+      ELASTIC_USER: $ELASTIC_USER
+      ELASTIC_PASS: $ELASTIC_PASS
+      ELASTIC_URL: $ELASTIC_URL
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    build:
+      context: containers/kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: kibana
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./containers/kibana/kibana.yml
+        target: /usr/share/kibana/kibana.yml
+        read_only: true
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTIC_HOST: $ELASTIC_HOST
+      ELASTIC_USER: $ELASTIC_USER
+      ELASTIC_PASS: $ELASTIC_PASS
+      ELASTIC_URL: $ELASTIC_URL
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+  metricbeat:
+    build:
+      context: containers/metricbeat/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: metricbeat
+    restart: unless-stopped
+    pid: host
+    user: root
+    volumes:
+      - type: bind
+        source: ./containers/metricbeat/metricbeat.yml
+        target: /usr/share/metricbeat/metricbeat.yml
+        read_only: true
+      - type: bind
+        source: ./containers/metricbeat/ssl/
+        target: /usr/share/metricbeat/ssl
+        read_only: true
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '/proc:/hostfs/proc:ro'
+      - '/sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro'
+      - '/:/hostfs:ro'
+    depends_on:
+      - elasticsearch
+    environment:
+      ELASTIC_HOST: $ELASTIC_HOST
+      ELASTIC_PROTO: $ELASTIC_PROTO
+      ELASTIC_USER: $ELASTIC_USER
+      ELASTIC_PASS: $ELASTIC_PASS
+    networks:
+      - elk
+
+  auditbeat:
+    build:
+      context: containers/auditbeat/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: auditbeat
+    restart: unless-stopped
+    pid: host
+    user: root
+    cap_add:
+      - AUDIT_CONTROL
+      - AUDIT_READ
+    volumes:
+      - type: bind
+        source: ./containers/auditbeat/auditbeat.yml
+        target: /usr/share/auditbeat/auditbeat.yml
+        read_only: true
+      - type: bind
+        source: ./containers/auditbeat/ssl/
+        target: /usr/share/auditbeat/ssl
+        read_only: true
+    depends_on:
+      - elasticsearch
+    environment:
+      ELASTIC_HOST: $ELASTIC_HOST
+      ELASTIC_PROTO: $ELASTIC_PROTO
+      ELASTIC_USER: $ELASTIC_USER
+      ELASTIC_PASS: $ELASTIC_PASS
+    networks:
+      - elk
+
+  packetbeat:
+    build:
+      context: containers/packetbeat/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: packetbeat
+    restart: unless-stopped
+    user: root
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - type: bind
+        source: ./containers/packetbeat/packetbeat.yml
+        target: /usr/share/packetbeat/packetbeat.yml
+        read_only: true
+      - type: bind
+        source: ./containers/packetbeat/ssl/
+        target: /usr/share/packetbeat/ssl
+        read_only: true
+    environment:
+      ELASTIC_HOST: $ELASTIC_HOST
+      ELASTIC_PROTO: $ELASTIC_PROTO
+      ELASTIC_USER: $ELASTIC_USER
+      ELASTIC_PASS: $ELASTIC_PASS
+    networks:
+      - elk
+#    network_mode: host
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    build:
+      context: containers/filebeat/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: filebeat
+    restart: unless-stopped
+    user: root
+    volumes:
+      - type: bind
+        source: ./containers/filebeat/filebeat.yml
+        target: /usr/share/filebeat/filebeat.yml
+        read_only: true
+      - type: bind
+        source: ./containers/filebeat/ssl/
+        target: /usr/share/filebeat/ssl
+        read_only: true
+      - type: bind
+        source: /var/log/
+        target: /var/log/
+        read_only: true
+    environment:
+      ELASTIC_HOST: $ELASTIC_HOST
+      ELASTIC_PROTO: $ELASTIC_PROTO
+      ELASTIC_USER: $ELASTIC_USER
+      ELASTIC_PASS: $ELASTIC_PASS
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+  heartbeat:
+    build:
+      context: containers/heartbeat/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: heartbeat
+    restart: unless-stopped
+    user: root
+    volumes:
+      - type: bind
+        source: ./containers/heartbeat/heartbeat.yml
+        target: /usr/share/heartbeat/heartbeat.yml
+        read_only: true
+      - type: bind
+        source: ./containers/heartbeat/ssl/
+        target: /usr/share/heartbeat/ssl
+        read_only: true
+    environment:
+      ELASTIC_HOST: $ELASTIC_HOST
+      ELASTIC_PROTO: $ELASTIC_PROTO
+      ELASTIC_USER: $ELASTIC_USER
+      ELASTIC_PASS: $ELASTIC_PASS
+      ELASTIC_URL: $ELASTIC_URL
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
+
+
+networks:
+  elk:
+    driver: bridge
+
+volumes:
+  elasticsearch:

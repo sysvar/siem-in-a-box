@@ -1,0 +1,141 @@
+#============================= Filebeat modules ===============================
+
+filebeat.config.modules:
+
+  path: /etc/filebeat/modules.d/*.yml
+  reload.enabled: false
+  #reload.period: 10s
+
+filebeat.modules:
+- module: system
+  syslog:
+    enabled: true
+    var.paths: ["/var/log/syslog*"]
+  auth:
+    enabled: true
+    var.paths: ["/var/log/auth.log*"]
+
+- module: iptables
+  log:
+    enabled: true
+    var.paths: ["/var/log/iptables.log"]
+    var.input: "file"
+
+- module: auditd
+  log:
+    enabled: true
+    var.paths: ["/var/log/audit.log*"]
+
+- module: logstash
+  log:
+    enabled: true
+    var.paths: ["/var/log/logstash/logstash-plain.log*"]
+    var.format: json
+  slowlog:
+    enabled: true
+    var.paths: ["/var/log/logstash/logstash-slowlog.log*"]
+    var.format: json
+
+- module: elasticsearch
+  server:
+    enabled: true
+    var.paths:
+      - /var/log/elasticsearch/*.log
+      - /var/log/elasticsearch/*_server.json
+  gc:
+    var.paths:
+      - /var/log/elasticsearch/gc.log.[0-9]*
+      - /var/log/elasticsearch/gc.log
+  audit:
+    var.paths:
+      - /var/log/elasticsearch/*_access.log
+      - /var/log/elasticsearch/*_audit.json
+  slowlog:
+    var.paths:
+      - /var/log/elasticsearch/*_index_search_slowlog.log
+      - /var/log/elasticsearch/*_index_indexing_slowlog.log
+      - /var/log/elasticsearch/*_index_search_slowlog.json
+      - /var/log/elasticsearch/*_index_indexing_slowlog.json
+  deprecation:
+    var.paths:
+      - /var/log/elasticsearch/*_deprecation.log
+      - /var/log/elasticsearch/*_deprecation.json
+
+- module: apache
+  access:
+    enabled: true
+    var.paths: ["/var/log/apache/access.log*"]
+  error:
+    enabled: true
+    var.paths: ["/var/log/apache/error.log*"]
+
+- module: nginx
+  access:
+    enabled: true
+    var.paths: ["/var/log/nginx/access.log*"]
+  error:
+    enabled: true
+    var.paths: ["/var/log/nginx/error.log*"]
+
+
+
+#=========================== Filebeat prospectors =============================
+
+filebeat.inputs:
+
+- type: log
+  enabled: false
+  paths:
+    - /var/log/apache2/modsec_audit.log
+  tags: ["modsec"]
+  exclude_files: ['.gz$']
+
+- type: log
+  enabled: false
+  paths:
+    - /var/log/openvpn.log
+  tags: ["openvpn"]
+  exclude_files: ['.gz$']
+
+- type: docker
+  enabled: true
+  containers.ids: '*'
+  exclude_files: ['.gz$']
+
+#================================ General =====================================
+
+name: siem
+tags: ["filebeat"]
+
+#==================== Elasticsearch template setting ==========================
+
+setup.index_pattern.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+  index.codec: best_compression
+
+setup.template.name: "filebeat"
+setup.template.pattern: "filebeat-*"
+setup.template.overwrite: false
+setup.template.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+
+#================================ Outputs =====================================
+
+output.elasticsearch:
+  hosts: ["${ELASTIC_HOST}"]
+  protocol: "${ELASTIC_PROTO}"
+  username: "${ELASTIC_USER}"
+  password: "${ELASTIC_PASS}"
+
+#output.logstash:
+  #hosts: ["logstash:5044"]
+  #ssl.certificate_authorities: ["/usr/share/filebeat/ssl/ca.crt"]
+  #ssl.certificate: "/usr/share/filebeat/ssl/self-client.crt"
+  #ssl.key: "/usr/share/filebeat/ssl/self-client.key"
+
+#================================ Logging =====================================
+
+#logging.level: debug
+#logging.selectors: ["*"]
