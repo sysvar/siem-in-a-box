@@ -33,17 +33,17 @@ echo " [+] Downloading ELK Stack"
 git clone https://github.com/sysvar/siem-in-a-box.git /opt/siem-in-a-box -q 2>/dev/null
 echo
 echo
-echo " [+] Configuring SOC"
+echo " [+] Configuring SIEM"
 #nothing yet
 echo
 echo
-echo " [+] Starting SOC"
+echo " [+] Starting SIEM"
 cd /opt/siem-in-a-box
 make start
 sleep 30
 echo
 echo
-echo " [+] Importing Dashboards"
+echo " [+] Importing Dashboards... (May take a few minutes, be patient!)"
 cd /opt/siem-in-a-box
 make import-heart
 make import-audit
