@@ -65,6 +65,7 @@ wget -O - https://raw.githubusercontent.com/sysvar/siem-in-a-box/master/install.
  - Pass: changeme
 
 # To Do
+ - ASCII Art + Colours
  - Network Based Logging
  - TI Integration
  - Cert Automation
