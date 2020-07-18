@@ -3,7 +3,7 @@ This is a bare bones SIEM built on Elastic ELK using a Docker deployment. Made f
 
 # Features
  - Run on Docker
- - Basic Elastic ELK 7.5.1
+ - Basic Elastic ELK 7.8.0
  - All Elastic Beats
  - Sample Beats Dashboards
 
@@ -67,4 +67,5 @@ wget -O - https://raw.githubusercontent.com/sysvar/siem-in-a-box/master/install.
 # To Do
  - Network Based Logging
  - TI Integration
+ - Cert Automation
 
